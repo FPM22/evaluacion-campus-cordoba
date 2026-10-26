@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evaluación Campus Córdoba</title>
+<meta name="description" content="Evaluación práctica interactiva sobre el uso del Campus Córdoba: inscripción, acceso con CiDi, aulas y certificados.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f4ef; --surface:#ffffff; --surface-2:#efece4; --ink:#1d1f23; --muted:#5d626b;
+    --line:#d9d5ca; --accent:#0f5c8c; --accent-ink:#ffffff; --accent-soft:#e2eef6;
+    --ok:#1f7a4d; --ok-soft:#e1f2e8; --bad:#b4372b; --bad-soft:#f8e3e0; --warn:#9a6a00;
+    --radius:14px; --shadow:0 1px 2px rgba(0,0,0,.05),0 6px 20px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#14161a; --surface:#1c1f24; --surface-2:#252930; --ink:#ebedf0; --muted:#a2a8b2;
+      --line:#343943; --accent:#5aaee0; --accent-ink:#0c1a24; --accent-soft:#1d3342;
+      --ok:#5fcf94; --ok-soft:#173327; --bad:#f07a6d; --bad-soft:#3a1d1a; --warn:#e3b341;
+      --shadow:none;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#14161a; --surface:#1c1f24; --surface-2:#252930; --ink:#ebedf0; --muted:#a2a8b2;
+    --line:#343943; --accent:#5aaee0; --accent-ink:#0c1a24; --accent-soft:#1d3342;
+    --ok:#5fcf94; --ok-soft:#173327; --bad:#f07a6d; --bad-soft:#3a1d1a; --warn:#e3b341;
+    --shadow:none;
+  }
+  *{box-sizing:border-box}
+  fieldset.q,#result{scroll-margin-top:70px}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+  .wrap{max-width:780px;margin:0 auto;padding:32px 16px 96px}
+  header.top{margin-bottom:28px}
+  .eyebrow{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin:0 0 6px}
+  h1{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:clamp(1.9rem,5vw,2.6rem);line-height:1.1;margin:0 0 10px}
+  .lead{color:var(--muted);margin:0;max-width:60ch}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+  .card + .card{margin-top:16px}
+  h2{font-family:Fraunces,Georgia,serif;font-size:1.2rem;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:1fr;gap:14px}
+  @media (min-width:640px){.grid{grid-template-columns:2fr 1.3fr 1fr}}
+  label.f{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px}
+  input[type=text],input[type=date]{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--ink);font:inherit}
+  input:focus-visible,button:focus-visible,.opt input:focus-visible + span{outline:3px solid var(--accent);outline-offset:2px}
+  .err{color:var(--bad);font-size:.82rem;min-height:1.2em;margin-top:4px}
+  .progress{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0;margin:18px 0 4px}
+  .pbar{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+  .pbar > i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+  .plabel{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-top:6px}
+  fieldset.q{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow);padding:20px;margin:16px 0 0}
+  fieldset.q legend{float:left;width:100%;padding:0;margin:0 0 14px;font-weight:600;font-size:1.02rem}
+  fieldset.q legend .n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:.85rem;margin-right:8px;vertical-align:1px}
+  .opts{clear:both;display:grid;gap:8px}
+  .opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s}
+  .opt:hover{border-color:var(--accent)}
+  .opt input{appearance:none;-webkit-appearance:none;flex:0 0 20px;width:20px;height:20px;margin:2px 0 0;border:2px solid var(--muted);border-radius:50%;display:grid;place-items:center;background:var(--surface)}
+  .opt input:checked{border-color:var(--accent)}
+  .opt input:checked::after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+  .opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+  .opt .l{font-weight:600;color:var(--muted);margin-right:4px}
+  .locked .opt{cursor:default}
+  .opt.correct,.opt.correct:has(input:checked){border-color:var(--ok);background:var(--ok-soft)}
+  .opt.wrong,.opt.wrong:has(input:checked){border-color:var(--bad);background:var(--bad-soft)}
+  .opt.correct input:checked{border-color:var(--ok)} .opt.correct input:checked::after{background:var(--ok)}
+  .opt.wrong input:checked{border-color:var(--bad)} .opt.wrong input:checked::after{background:var(--bad)}
+  .tag{display:block;font-size:.78rem;font-weight:600}
+  .tag:empty{display:none}
+  .opt.correct .tag{color:var(--ok)} .opt.wrong .tag{color:var(--bad)}
+  .fb{display:none;margin-top:12px;padding:12px 14px;border-radius:10px;background:var(--surface-2);font-size:.92rem}
+  .fb b{display:block;margin-bottom:2px}
+  .show-fb .fb{display:block}
+  .q.unanswered{border-color:var(--warn)}
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  button{font:inherit;font-weight:600;border-radius:10px;padding:12px 18px;cursor:pointer;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+  button.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  .formmsg{color:var(--bad);font-size:.9rem;margin-top:10px;min-height:1.3em}
+  #result{display:none;margin-top:22px}
+  #result.on{display:block}
+  .score{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+  .big{font-family:Fraunces,Georgia,serif;font-size:3rem;font-weight:700;line-height:1}
+  .big small{font-size:1.2rem;color:var(--muted)}
+  .badge{display:inline-block;padding:6px 12px;border-radius:99px;font-weight:600;font-size:.9rem}
+  .badge.ok{background:var(--ok-soft);color:var(--ok)}
+  .badge.bad{background:var(--bad-soft);color:var(--bad)}
+  .meta{color:var(--muted);font-size:.9rem;margin:10px 0 0}
+  .dots{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .dots a{display:grid;place-items:center;width:34px;height:34px;border-radius:8px;font-weight:600;font-size:.85rem;text-decoration:none}
+  .dots .y{background:var(--ok-soft);color:var(--ok)} .dots .n{background:var(--bad-soft);color:var(--bad)}
+  .about{margin-top:20px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+  .about summary{cursor:pointer;padding:14px 18px;font-weight:600;list-style:none;display:flex;justify-content:space-between;gap:12px}
+  .about summary::-webkit-details-marker{display:none}
+  .about summary::after{content:"+";color:var(--accent);font-size:1.2rem;line-height:1}
+  .about[open] summary::after{content:"–"}
+  .about .in{padding:0 18px 18px;font-size:.93rem}
+  .about h3{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:16px 0 6px}
+  .about ul{margin:0;padding-left:20px}
+  .about li{margin:3px 0}
+  .about p{margin:0 0 8px}
+  .steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+  .steps span{font-size:.8rem;padding:4px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted)}
+  .steps span.now{background:var(--accent);color:var(--accent-ink);font-weight:600}
+  a{color:var(--accent)}
+  footer p{margin:4px 0}
+  @media print{.about{display:none}}
+  footer{margin-top:40px;color:var(--muted);font-size:.8rem;text-align:center}
+  .theme{position:absolute;top:14px;right:16px;padding:8px 10px;font-size:.8rem}
+  @media print{
+    :root{--bg:#fff;--surface:#fff;--surface-2:#fff;--ink:#000;--muted:#333;--line:#999;--shadow:none}
+    .progress,.actions,.theme,.formmsg{display:none!important}
+    .wrap{padding:0;max-width:none}
+    fieldset.q,.card{break-inside:avoid;box-shadow:none}
+    body{font-size:12pt}
+  }
+</style>
+</head>
+<body>
+<button class="theme" id="themeBtn" type="button" aria-label="Cambiar tema">◐ Tema</button>
+<main class="wrap">
+  <header class="top">
+    <p class="eyebrow">Evaluación práctica</p>
+    <h1>Campus Córdoba</h1>
+    <p class="lead">Seis preguntas sobre el recorrido completo: inscribirte a un curso, ingresar con Ciudadano Digital (CiDi), entrar al aula y descargar tu certificado. Se aprueba con 5 o 6 respuestas correctas.</p>
+
+    <details class="about">
+      <summary>Sobre esta evaluación: contexto del plan de capacitación</summary>
+      <div class="in">
+        <p>Esta página es la <strong>instancia de evaluación</strong> de un Plan de Capacitación sobre <a href="https://campuscordoba.cba.gov.ar" target="_blank" rel="noopener">Campus Córdoba</a>, el portal donde el Gobierno de la Provincia reúne sus capacitaciones gratuitas. Se usa después de la guía paso a paso (14 diapositivas, unos 15 minutos) para comprobar si cada participante puede hacer el recorrido por su cuenta.</p>
+        <div class="steps" aria-label="Etapas del plan">
+          <span>1. Relevamiento</span><span>2. Diagnóstico</span><span>3. Plan</span><span>4. Material didáctico</span><span class="now">5. Evaluación</span>
+        </div>
+        <h3>Destinatarios</h3>
+        <p>Estudiantes y cualquier persona de Córdoba que quiera capacitarse gratis. No hace falta saber nada previo además de lo visto en la guía.</p>
+        <h3>Qué evalúa</h3>
+        <ul>
+          <li>Inscribirse a un curso desde la portada del portal.</li>
+          <li>Entender por qué se ingresa con CiDi.</li>
+          <li>Encontrar el aula y los contenidos del curso.</li>
+          <li>Resolver el problema más común: “No tenés cursos activos”.</li>
+          <li>Cumplir los requisitos del certificado (nivel 2 de CiDi) y descargarlo.</li>
+        </ul>
+        <h3>Cómo se califica</h3>
+        <p>Cada respuesta vale 1 punto. Con 5 o 6 la condición es <strong>Logrado</strong>; con menos de 5 queda <strong>En revisión</strong> y conviene repasar la guía. Después de corregir, cada pregunta muestra la respuesta correcta y por qué.</p>
+        <h3>Por qué una página web</h3>
+        <p>El 69% de los accesos a Campus Córdoba son desde el celular, así que la evaluación tenía que funcionar bien en el teléfono. Una página web abre con un enlace, sin cuentas ni instalaciones, corrige al instante con devolución pedagógica y permite guardar el resultado en PDF como evidencia.</p>
+      </div>
+    </details>
+  </header>
+
+  <form id="evalForm" novalidate>
+    <section class="card" aria-labelledby="datosT">
+      <h2 id="datosT">Tus datos</h2>
+      <div class="grid">
+        <div>
+          <label class="f" for="nombre">Nombre y apellido</label>
+          <input type="text" id="nombre" autocomplete="name" placeholder="Ej.: María Pérez">
+          <div class="err" id="eNombre"></div>
+        </div>
+        <div>
+          <label class="f" for="cuil">CUIL</label>
+          <input type="text" id="cuil" inputmode="numeric" placeholder="20-12345678-3" maxlength="13">
+          <div class="err" id="eCuil"></div>
+        </div>
+        <div>
+          <label class="f" for="fecha">Fecha</label>
+          <input type="date" id="fecha">
+          <div class="err" id="eFecha"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="progress" aria-live="polite">
+      <div class="pbar"><i id="pfill"></i></div>
+      <div class="plabel"><span id="ptext">0 de 6 respondidas</span><span>Logrado: 5–6</span></div>
+    </div>
+
+    <div id="questions"></div>
+
+    <div class="actions">
+      <button type="submit" class="primary" id="btnCheck">Corregir evaluación</button>
+      <button type="button" id="btnPrint" disabled>Imprimir / guardar PDF</button>
+      <button type="button" id="btnReset">Empezar de nuevo</button>
+    </div>
+    <div class="formmsg" id="formMsg" role="alert"></div>
+  </form>
+
+  <section id="result" class="card" aria-live="polite" tabindex="-1">
+    <h2>Resultado</h2>
+    <div class="score">
+      <div class="big" id="rScore">0<small> / 6</small></div>
+      <div>
+        <span class="badge" id="rBadge"></span>
+        <p class="meta" id="rMeta"></p>
+      </div>
+    </div>
+    <div class="dots" id="rDots"></div>
+  </section>
+
+  <footer>
+    <p>Trabajo práctico de la materia electiva Comunicación Multimedial en el Desarrollo de Sistemas de Información · UTN Facultad Regional Córdoba · 2026</p>
+    <p>Material educativo independiente. No es un sitio oficial del Gobierno de la Provincia de Córdoba.</p>
+  </footer>
+</main>
+
+<script>
+const PREGUNTAS = [
+  { t:'¿Cómo te inscribís al curso "Herramientas Digitales" desde la portada del Campus?',
+    o:['Enviar mensaje en "Contacto" y esperar confirmación manual por correo.',
+       'Ir a "Cursos", buscarlo, abrir la ficha y presionar "Inscribirme".',
+       'Descargar el temario en PDF y esperar al inicio de clases.'],
+    c:1, e:'La inscripción es autogestionada: se busca el curso en "Cursos", se abre su ficha y se presiona "Inscribirme". No requiere intervención manual.' },
+  { t:'Al presionar "Inscribirme", el sistema abre Ciudadano Digital (CiDi). ¿Por qué?',
+    o:['Es un error de redireccionamiento del navegador.',
+       'Es obligatorio ingresar con CUIL y clave para validar la identidad oficial de la vacante.',
+       'Ocurre únicamente si la cuenta registra pagos pendientes.'],
+    c:1, e:'CiDi es la puerta de acceso oficial: valida tu identidad con CUIL y clave para asignarte la vacante a vos.' },
+  { t:'Tras iniciar sesión con CiDi, ¿dónde ingresás a ver las clases y los contenidos?',
+    o:['En la sección "Mis Cursos" / "Mis Aulas", haciendo clic sobre el curso activo.',
+       'En la bandeja de entrada de tu correo personal (se envían como archivos adjuntos).',
+       'En la sección "Preguntas Frecuentes" del menú inferior.'],
+    c:0, e:'Los contenidos viven dentro del aula virtual: se accede desde "Mis Cursos" / "Mis Aulas" eligiendo el curso activo.' },
+  { t:'Entrás al campus pero aparece "No tenés cursos activos". ¿Qué verificás primero?',
+    o:['Crear una cuenta nueva de CiDi con otro correo electrónico.',
+       'Que el CUIL iniciado sea el mismo de la inscripción y que la fecha de inicio esté vigente.',
+       'Solicitar la baja inmediata del usuario.'],
+    c:1, e:'Las dos causas más comunes son haber ingresado con otro CUIL o que el curso todavía no haya comenzado. Crear otra cuenta solo complica el problema.' },
+  { t:'¿Qué requisito es obligatorio para habilitar la descarga del certificado oficial?',
+    o:['Completar las actividades requeridas y contar con nivel verificado en CiDi (Nivel 2).',
+       'Sacar un turno presencial en una dependencia provincial.',
+       'Solicitar autorización enviando foto del DNI por WhatsApp.'],
+    c:0, e:'El certificado se habilita al aprobar las actividades obligatorias y con la identidad verificada en CiDi (Nivel 2). Nunca se pide el DNI por WhatsApp.' },
+  { t:'¿Desde qué apartado descargás tu certificado una vez aprobado el curso?',
+    o:['Exclusivamente desde un enlace enviado por SMS.',
+       'Desde "Certificados" / "Mis Certificaciones" en el perfil del campus (botón PDF).',
+       'Ingresando otra vez al buscador general de capacitaciones.'],
+    c:1, e:'El certificado queda disponible en tu perfil, en "Certificados" / "Mis Certificaciones", desde donde se descarga en PDF.' }
+];
+const LETRAS = ['a','b','c'];
+const $ = s => document.querySelector(s);
+let corregido = false;
+
+// Render de preguntas
+const cont = $('#questions');
+PREGUNTAS.forEach((p,i)=>{
+  const fs = document.createElement('fieldset');
+  fs.className='q'; fs.id='q'+(i+1);
+  fs.innerHTML = `<legend><span class="n">${i+1}</span>${p.t}</legend>
+    <div class="opts">${p.o.map((txt,j)=>`
+      <label class="opt" data-j="${j}">
+        <input type="radio" name="p${i}" value="${j}">
+        <span><span class="l">${LETRAS[j]})</span>${txt}<span class="tag"></span></span>
+      </label>`).join('')}
+    </div>
+    <div class="fb" aria-live="polite"></div>`;
+  cont.appendChild(fs);
+});
+
+// Fecha de hoy por defecto
+const hoy = new Date(); hoy.setMinutes(hoy.getMinutes()-hoy.getTimezoneOffset());
+$('#fecha').value = hoy.toISOString().slice(0,10);
+
+// Máscara y validación de CUIL
+$('#cuil').addEventListener('input', e=>{
+  let d = e.target.value.replace(/\D/g,'').slice(0,11);
+  let out = d.slice(0,2);
+  if(d.length>2) out += '-'+d.slice(2,10);
+  if(d.length>10) out += '-'+d.slice(10);
+  e.target.value = out;
+  $('#eCuil').textContent='';
+});
+function cuilValido(c){
+  const d = c.replace(/\D/g,'');
+  if(d.length!==11) return 'El CUIL debe tener 11 dígitos.';
+  if(!['20','23','24','27','30','33','34'].includes(d.slice(0,2))) return 'El prefijo del CUIL no es válido.';
+  const pesos=[5,4,3,2,7,6,5,4,3,2];
+  let s=0; for(let i=0;i<10;i++) s+= +d[i]*pesos[i];
+  let v = 11 - (s%11); if(v===11) v=0;
+  if(v===10 || v!==+d[10]) return 'El dígito verificador no coincide. Revisá el número.';
+  return '';
+}
+
+// Progreso
+function respondidas(){ return PREGUNTAS.filter((_,i)=>document.querySelector(`input[name=p${i}]:checked`)).length; }
+function actualizarProgreso(){
+  const n = respondidas();
+  $('#pfill').style.width = (n/6*100)+'%';
+  $('#ptext').textContent = `${n} de 6 respondidas`;
+}
+cont.addEventListener('change', e=>{
+  if(corregido){ e.preventDefault(); return; }
+  e.target.closest('fieldset').classList.remove('unanswered');
+  $('#formMsg').textContent='';
+  actualizarProgreso();
+});
+['nombre','fecha'].forEach(id=>$('#'+id).addEventListener('input',()=>$('#e'+id[0].toUpperCase()+id.slice(1)).textContent=''));
+
+// Corrección
+$('#evalForm').addEventListener('submit', e=>{
+  e.preventDefault();
+  if(corregido) return;
+  let ok = true, primero = null;
+  const nombre = $('#nombre').value.trim();
+  if(nombre.length<3){ $('#eNombre').textContent='Ingresá tu nombre y apellido.'; ok=false; primero??=$('#nombre'); }
+  const ec = cuilValido($('#cuil').value);
+  if(ec){ $('#eCuil').textContent=ec; ok=false; primero??=$('#cuil'); }
+  if(!$('#fecha').value){ $('#eFecha').textContent='Indicá la fecha.'; ok=false; primero??=$('#fecha'); }
+  PREGUNTAS.forEach((_,i)=>{
+    if(!document.querySelector(`input[name=p${i}]:checked`)){
+      $('#q'+(i+1)).classList.add('unanswered'); ok=false; primero??=$('#q'+(i+1));
+    }
+  });
+  if(!ok){
+    $('#formMsg').textContent='Faltan datos o respuestas. Revisá lo marcado.';
+    primero.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  corregido = true;
+  let puntaje = 0; const dots=[];
+  PREGUNTAS.forEach((p,i)=>{
+    const fs = $('#q'+(i+1));
+    const elegida = +document.querySelector(`input[name=p${i}]:checked`).value;
+    const bien = elegida===p.c; if(bien) puntaje++;
+    fs.classList.add('locked','show-fb');
+    fs.querySelectorAll('input').forEach(r=>r.disabled=true);
+    fs.querySelectorAll('.opt').forEach(op=>{
+      const j=+op.dataset.j;
+      if(j===p.c){ op.classList.add('correct'); op.querySelector('.tag').textContent = bien?'✓ Tu respuesta':'✓ Correcta'; }
+      else if(j===elegida){ op.classList.add('wrong'); op.querySelector('.tag').textContent='✗ Tu respuesta'; }
+    });
+    fs.querySelector('.fb').innerHTML = `<b>${bien?'Correcto.':'Incorrecto — la respuesta es '+LETRAS[p.c]+').'}</b>${p.e}`;
+    dots.push(`<a href="#q${i+1}" class="${bien?'y':'n'}" title="Pregunta ${i+1}: ${bien?'correcta':'incorrecta'}">${i+1}</a>`);
+  });
+
+  const logrado = puntaje>=5;
+  $('#rScore').innerHTML = `${puntaje}<small> / 6</small>`;
+  const b = $('#rBadge'); b.className='badge '+(logrado?'ok':'bad');
+  b.textContent = logrado ? 'Logrado (5–6)' : 'En revisión (menos de 5)';
+  const [y,m,d] = $('#fecha').value.split('-');
+  $('#rMeta').textContent = `${nombre} · CUIL ${$('#cuil').value} · ${d}/${m}/${y}`;
+  $('#rDots').innerHTML = dots.join('');
+  ['nombre','cuil','fecha'].forEach(id=>$('#'+id).readOnly=true);
+  $('#btnCheck').disabled = true; $('#btnPrint').disabled = false;
+  const r = $('#result'); r.classList.add('on');
+  // mover resultado arriba de las preguntas para verlo primero
+  cont.before(r);
+  r.scrollIntoView({behavior:'smooth',block:'start'}); r.focus({preventScroll:true});
+});
+
+$('#btnPrint').addEventListener('click',()=>window.print());
+$('#btnReset').addEventListener('click',()=>{ location.reload(); });
+
+// Tema claro/oscuro manual
+$('#themeBtn').addEventListener('click',()=>{
+  const root=document.documentElement;
+  const actual = root.dataset.theme || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+  root.dataset.theme = actual==='dark'?'light':'dark';
+  try{ localStorage.setItem('tema',root.dataset.theme); }catch(_){}
+});
+try{ const t=localStorage.getItem('tema'); if(t) document.documentElement.dataset.theme=t; }catch(_){}
+</script>
+</body>
+</html>
